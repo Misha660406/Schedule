@@ -21,3 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "Schedule"
 include(":app")
+
+include(":shared-date")
+project(":shared-date").projectDir = file("shared/date")
