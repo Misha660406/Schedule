@@ -27,3 +27,6 @@ project(":shared-date").projectDir = file("shared/date")
 
 include(":shared-group")
 project(":shared-group").projectDir = file("shared/group")
+
+include(":shared-schedule")
+project(":shared-schedule").projectDir = file("shared/schedule")
