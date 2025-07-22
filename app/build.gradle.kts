@@ -60,4 +60,5 @@ dependencies {
 
     implementation(project(":shared-date"))
     implementation(project(":shared-group"))
+    implementation(project(":shared-schedule"))
 }
