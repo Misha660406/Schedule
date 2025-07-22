@@ -1,12 +1,12 @@
 package com.example.schedule.shared.date.domain.repository
 
-import java.util.Date
+import java.time.LocalDate
 
 interface DateRepository {
 
-    fun getToday(): Date
+    fun getToday(): LocalDate
 
-    fun getNextDate(date: Date): Date
+    fun getNextDate(date: LocalDate): LocalDate
 
-    fun getPreviousDate(date: Date): Date
+    fun getPreviousDate(date: LocalDate): LocalDate
 }

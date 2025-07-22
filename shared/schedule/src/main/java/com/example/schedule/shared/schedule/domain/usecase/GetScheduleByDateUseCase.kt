@@ -2,10 +2,10 @@ package com.example.schedule.shared.schedule.domain.usecase
 
 import com.example.schedule.shared.schedule.domain.entity.Schedule
 import com.example.schedule.shared.schedule.domain.repository.ScheduleRepository
-import java.util.Date
+import java.time.LocalDate
 
 class GetScheduleByDateUseCase(private val repository: ScheduleRepository) {
 
-    suspend operator fun invoke(date: Date): Schedule =
+    suspend operator fun invoke(date: LocalDate): Schedule =
         repository.getByDate(date)
 }
