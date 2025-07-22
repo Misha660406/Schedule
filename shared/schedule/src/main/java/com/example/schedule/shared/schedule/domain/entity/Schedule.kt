@@ -1,8 +1,8 @@
 package com.example.schedule.shared.schedule.domain.entity
 
-import java.util.Date
+import java.time.LocalDate
 
 data class Schedule(
-    val date: Date,
+    val date: LocalDate,
     val lessons: List<Lesson>
 )
