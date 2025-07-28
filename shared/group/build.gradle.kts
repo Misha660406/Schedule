@@ -3,6 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+dependencies {
+    implementation(libs.koin.android)
+}
+
 android {
     kotlinOptions {
         jvmTarget = "11"
