@@ -30,3 +30,6 @@ project(":shared-group").projectDir = file("shared/group")
 
 include(":shared-schedule")
 project(":shared-schedule").projectDir = file("shared/schedule")
+
+include(":libs-navigation")
+project(":libs-navigation").projectDir = file("libs/navigation")
