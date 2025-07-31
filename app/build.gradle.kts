@@ -48,7 +48,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
+    implementation(libs.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,4 +61,6 @@ dependencies {
     implementation(project(":shared-date"))
     implementation(project(":shared-group"))
     implementation(project(":shared-schedule"))
+
+    implementation(project(":libs-navigation"))
 }

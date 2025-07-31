@@ -1,6 +1,7 @@
 package com.example.schedule
 
 import android.app.Application
+import com.example.schedule.di.navigationModule
 import com.example.schedule.shared.date.di.sharedDateModule
 import com.example.schedule.shared.group.di.sharedGroupModule
 import com.example.schedule.shared.schedule.di.sharedScheduleModule
@@ -15,9 +16,10 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             modules(
+                navigationModule,
                 sharedDateModule,
                 sharedGroupModule,
-                sharedScheduleModule
+                sharedScheduleModule,
             )
         }
     }
