@@ -63,4 +63,6 @@ dependencies {
     implementation(project(":shared-schedule"))
 
     implementation(project(":libs-navigation"))
+
+    implementation(project(":feature-schedule"))
 }
