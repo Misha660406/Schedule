@@ -12,8 +12,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.schedule.di.GlobalBackstackNavigatorQualifier
+import com.example.schedule.feature.schedule.ui.ScheduleScreen
 import com.example.schedule.libs.navigation.BackstackNavigator
-import com.example.schedule.libs.navigation.BackstackNavigator.EmptyScreen
 import com.example.schedule.ui.theme.ScheduleTheme
 import org.koin.android.ext.android.inject
 
@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
     private val navigator: BackstackNavigator by inject(GlobalBackstackNavigatorQualifier)
 
     init {
-        navigator.open(EmptyScreen)
+        navigator.open(ScheduleScreen())
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
