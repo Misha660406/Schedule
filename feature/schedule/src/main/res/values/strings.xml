@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feature_schedule_loading">Загрузка расписания…</string>
+    <string name="feature_schedule_no_lessons">Нет занятий</string>
+    <string name="feature_schedule_room">Кабинет: %s</string>
+</resources>
