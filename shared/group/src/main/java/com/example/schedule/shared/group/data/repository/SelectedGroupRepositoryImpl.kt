@@ -7,6 +7,12 @@ class SelectedGroupRepositoryImpl : SelectedGroupRepository {
 
     private val selectedGroups = mutableSetOf<Group>()
 
+    init {
+        selectedGroups.add(Group(id = 100, name = "Группа 100"))
+        selectedGroups.add(Group(id = 200, name = "Группа 200"))
+        selectedGroups.add(Group(id = 300, name = "Группа 300"))
+    }
+
     override suspend fun getSelectedGroupList(): List<Group> =
         selectedGroups.toList()
 
