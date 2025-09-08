@@ -16,7 +16,10 @@ class ScheduleScreen : Screen {
     override fun Render() {
         val state by viewModel.state.collectAsState()
 
-        Render(state = state)
+        Render(
+            state = state,
+            onSelectedScheduleIndexChangedListener = viewModel::updateSelectedScheduleIndex
+        )
 
         LaunchedEffect(Unit) {
             viewModel.loadInitialData()

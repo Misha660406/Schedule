@@ -1,6 +1,6 @@
 package com.example.schedule.feature.schedule.ui
 
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -8,9 +8,13 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -19,16 +23,19 @@ import com.example.schedule.feature.schedule.R
 import com.example.schedule.feature.schedule.presentation.State
 
 @Composable
-fun Render(state: State) {
+fun Render(state: State, onSelectedScheduleIndexChangedListener: (Int) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(WindowInsets.systemBars.asPaddingValues())
     ) {
-        Crossfade(targetState = state) { state ->
+        AnimatedContent(
+            targetState = state,
+            contentKey = { state::class.java },
+        ) { state ->
             when (state) {
                 is State.Initial, State.Loading -> LoadingContent()
-                is State.Content -> Content(state)
+                is State.Content -> Content(state, onSelectedScheduleIndexChangedListener)
             }
         }
     }
@@ -50,9 +57,28 @@ private fun LoadingContent() {
 }
 
 @Composable
-private fun Content(state: State.Content) {
+private fun Content(state: State.Content, onSelectedScheduleIndexChangedListener: (Int) -> Unit) {
+    val pagerState = rememberPagerState(
+        initialPage = state.selectedScheduleIndex,
+        pageCount = { state.schedule.size }
+    )
+
+    LaunchedEffect(state.selectedScheduleIndex) {
+        pagerState.animateScrollToPage(state.selectedScheduleIndex)
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect {
+            onSelectedScheduleIndexChangedListener(it)
+        }
+    }
+
     Column(Modifier.fillMaxSize()) {
-        Header(state.schedule.date, state.group.name)
-        ScheduleDay(schedule = state.schedule)
+        HorizontalPager(state = pagerState) { page ->
+            Column(Modifier.fillMaxSize()) {
+                Header(state.schedule[page].date, state.group.name)
+                ScheduleDay(schedule = state.schedule[page])
+            }
+        }
     }
 }
