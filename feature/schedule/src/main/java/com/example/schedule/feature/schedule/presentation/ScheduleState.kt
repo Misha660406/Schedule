@@ -11,6 +11,7 @@ sealed interface State {
 
     data class Content(
         val group: Group,
-        val schedule: Schedule
+        val schedule: List<Schedule>,
+        val selectedScheduleIndex: Int,
     ) : State
 }

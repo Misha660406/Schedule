@@ -8,6 +8,8 @@ val featureScheduleModule = module {
     viewModel {
         ScheduleViewModel(
             getTodayUseCase = get(),
+            getNextDateUseCase = get(),
+            getPreviousDateUseCase = get(),
             getSelectedGroupListUseCase = get(),
             getScheduleByDateUseCase = get()
         )
