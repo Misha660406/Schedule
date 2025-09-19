@@ -5,9 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.schedule.shared.date.domain.usecase.GetNextDateUseCase
 import com.example.schedule.shared.date.domain.usecase.GetPreviousDateUseCase
 import com.example.schedule.shared.date.domain.usecase.GetTodayUseCase
-import com.example.schedule.shared.group.domain.entity.Group
 import com.example.schedule.shared.group.domain.usecase.GetSelectedGroupListUseCase
-import com.example.schedule.shared.schedule.domain.entity.Schedule
 import com.example.schedule.shared.schedule.domain.usecase.GetScheduleByDateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,20 +33,18 @@ class ScheduleViewModel(
 
             val today = getTodayUseCase()
             val group = getSelectedGroupListUseCase().first()
-            val schedule = getCurrentWeekSchedules(group, today)
+            val scheduleStateList = createInitialScheduleStates(today)
 
             _state.value = State.Content(
                 group = group,
-                schedule = schedule,
-                selectedScheduleIndex = schedule.indexOfFirst { it.date == today }
+                scheduleStateList = scheduleStateList,
+                selectedScheduleIndex = scheduleStateList.indexOfFirst { it.date == today },
             )
         }
     }
 
-    private suspend fun getCurrentWeekSchedules(group: Group, today: LocalDate): List<Schedule> =
-        getCurrentWeek(today).map { date ->
-            getScheduleByDateUseCase(group.id, date)
-        }
+    private fun createInitialScheduleStates(today: LocalDate): List<ScheduleState> =
+        getCurrentWeek(today).map(ScheduleState::ReadyToLoad)
 
     private fun getCurrentWeek(today: LocalDate): List<LocalDate> {
         val datesOfWeek = mutableListOf(getStartOfCurrentWeek(today))
@@ -69,5 +65,39 @@ class ScheduleViewModel(
     fun updateSelectedScheduleIndex(newIndex: Int) {
         val contentState = _state.value as? State.Content ?: return
         _state.value = contentState.copy(selectedScheduleIndex = newIndex)
+        loadSchedule(newIndex)
     }
+
+    private fun loadSchedule(index: Int) {
+        val currentState = _state.value as? State.Content ?: return
+        val scheduleState = currentState.scheduleStateList[index]
+
+        if (scheduleState is ScheduleState.Loading || scheduleState is ScheduleState.Loaded) {
+            return
+        }
+
+        _state.value = currentState.updateScheduleState(
+            index = index,
+            scheduleState = ScheduleState.Loading(scheduleState.date)
+        )
+
+        viewModelScope.launch {
+            val schedule = getScheduleByDateUseCase(currentState.group.id, scheduleState.date)
+            (_state.value as? State.Content)?.let {
+                _state.value = it.updateScheduleState(
+                    index = index,
+                    scheduleState = ScheduleState.Loaded(scheduleState.date, schedule.lessons)
+                )
+            }
+
+        }
+    }
+
+    private fun State.Content.updateScheduleState(
+        index: Int,
+        scheduleState: ScheduleState
+    ): State.Content =
+        scheduleStateList.toMutableList()
+            .apply { set(index, scheduleState) }
+            .let { copy(scheduleStateList = it) }
 }
