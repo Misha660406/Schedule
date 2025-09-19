@@ -2,6 +2,7 @@ package com.example.schedule.shared.date.di
 
 import com.example.schedule.shared.date.data.repository.DateRepositoryImpl
 import com.example.schedule.shared.date.domain.repository.DateRepository
+import com.example.schedule.shared.date.domain.usecase.GetDatesAroundTodayUseCase
 import com.example.schedule.shared.date.domain.usecase.GetNextDateUseCase
 import com.example.schedule.shared.date.domain.usecase.GetPreviousDateUseCase
 import com.example.schedule.shared.date.domain.usecase.GetTodayUseCase
@@ -13,4 +14,5 @@ val sharedDateModule = module {
     factory { GetNextDateUseCase(repository = get()) }
     factory { GetPreviousDateUseCase(repository = get()) }
     factory { GetTodayUseCase(repository = get()) }
+    factory { GetDatesAroundTodayUseCase(repository = get()) }
 }

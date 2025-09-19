@@ -9,4 +9,6 @@ interface DateRepository {
     fun getNextDate(date: LocalDate): LocalDate
 
     fun getPreviousDate(date: LocalDate): LocalDate
+
+    fun plusDays(date: LocalDate, days: Long): LocalDate
 }
