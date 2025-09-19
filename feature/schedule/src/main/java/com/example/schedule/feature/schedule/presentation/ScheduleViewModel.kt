@@ -2,22 +2,19 @@ package com.example.schedule.feature.schedule.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.schedule.shared.date.domain.usecase.GetNextDateUseCase
-import com.example.schedule.shared.date.domain.usecase.GetPreviousDateUseCase
+import com.example.schedule.shared.date.domain.usecase.GetDatesAroundTodayUseCase
 import com.example.schedule.shared.date.domain.usecase.GetTodayUseCase
 import com.example.schedule.shared.group.domain.usecase.GetSelectedGroupListUseCase
 import com.example.schedule.shared.schedule.domain.usecase.GetScheduleByDateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 class ScheduleViewModel(
     private val getTodayUseCase: GetTodayUseCase,
-    private val getNextDateUseCase: GetNextDateUseCase,
-    private val getPreviousDateUseCase: GetPreviousDateUseCase,
     private val getSelectedGroupListUseCase: GetSelectedGroupListUseCase,
-    private val getScheduleByDateUseCase: GetScheduleByDateUseCase
+    private val getScheduleByDateUseCase: GetScheduleByDateUseCase,
+    private val getDatesAroundTodayUseCase: GetDatesAroundTodayUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<State>(State.Initial)
@@ -33,7 +30,7 @@ class ScheduleViewModel(
 
             val today = getTodayUseCase()
             val group = getSelectedGroupListUseCase().first()
-            val scheduleStateList = createInitialScheduleStates(today)
+            val scheduleStateList = createInitialScheduleStates()
 
             _state.value = State.Content(
                 group = group,
@@ -43,23 +40,9 @@ class ScheduleViewModel(
         }
     }
 
-    private fun createInitialScheduleStates(today: LocalDate): List<ScheduleState> =
-        getCurrentWeek(today).map(ScheduleState::ReadyToLoad)
-
-    private fun getCurrentWeek(today: LocalDate): List<LocalDate> {
-        val datesOfWeek = mutableListOf(getStartOfCurrentWeek(today))
-        repeat(6) {
-            datesOfWeek.add(getNextDateUseCase(datesOfWeek.last()))
-        }
-        return datesOfWeek
-    }
-
-    private fun getStartOfCurrentWeek(today: LocalDate): LocalDate {
-        var startOfWeek = today
-        repeat(startOfWeek.dayOfWeek.value - 1) {
-            startOfWeek = getPreviousDateUseCase(startOfWeek)
-        }
-        return startOfWeek
+    private fun createInitialScheduleStates(): List<ScheduleState> {
+        return getDatesAroundTodayUseCase(500, 500)
+            .map(ScheduleState::ReadyToLoad)
     }
 
     fun updateSelectedScheduleIndex(newIndex: Int) {
