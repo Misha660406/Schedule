@@ -15,4 +15,8 @@ class DateRepositoryImpl : DateRepository {
     override fun getPreviousDate(date: LocalDate): LocalDate {
         return date.minusDays(1)
     }
+
+    override fun plusDays(date: LocalDate, days: Long): LocalDate {
+        return date.plusDays(days)
+    }
 }
