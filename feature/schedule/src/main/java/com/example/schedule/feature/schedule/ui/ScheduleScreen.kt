@@ -18,7 +18,10 @@ class ScheduleScreen : Screen {
 
         Render(
             state = state,
-            onSelectedScheduleIndexChangedListener = viewModel::updateSelectedScheduleIndex
+            onSelectedScheduleIndexChangedListener = viewModel::updateSelectedScheduleIndex,
+            onOpenGroupSelectorListener = viewModel::startGroupSelecting,
+            onCloseGroupSelectorListener = viewModel::cancelGroupSelecting,
+            onGroupSelectedListener = viewModel::selectNewGroup,
         )
 
         LaunchedEffect(Unit) {

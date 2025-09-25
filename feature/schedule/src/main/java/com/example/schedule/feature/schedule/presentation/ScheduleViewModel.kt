@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.schedule.shared.date.domain.usecase.GetDatesAroundTodayUseCase
 import com.example.schedule.shared.date.domain.usecase.GetTodayUseCase
+import com.example.schedule.shared.group.domain.entity.Group
 import com.example.schedule.shared.group.domain.usecase.GetSelectedGroupListUseCase
 import com.example.schedule.shared.schedule.domain.usecase.GetScheduleByDateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,26 +30,59 @@ class ScheduleViewModel(
             _state.value = State.Loading
 
             val today = getTodayUseCase()
-            val group = getSelectedGroupListUseCase().first()
+            val selectedGroupList = getSelectedGroupListUseCase()
             val scheduleStateList = createInitialScheduleStates()
 
             _state.value = State.Content(
-                group = group,
+                selectedGroup = selectedGroupList.first(),
                 scheduleStateList = scheduleStateList,
                 selectedScheduleIndex = scheduleStateList.indexOfFirst { it.date == today },
+                selectedGroupList = selectedGroupList,
+                selectedGroupState = SelectedGroupState.SELECTED
             )
         }
-    }
-
-    private fun createInitialScheduleStates(): List<ScheduleState> {
-        return getDatesAroundTodayUseCase(500, 500)
-            .map(ScheduleState::ReadyToLoad)
     }
 
     fun updateSelectedScheduleIndex(newIndex: Int) {
         val contentState = _state.value as? State.Content ?: return
         _state.value = contentState.copy(selectedScheduleIndex = newIndex)
         loadSchedule(newIndex)
+    }
+
+    fun selectNewGroup(group: Group) {
+        val contentState = _state.value as? State.Content ?: return
+
+        if (contentState.selectedGroup.id == group.id) {
+            cancelGroupSelecting()
+            return
+        }
+
+        viewModelScope.launch {
+            _state.value = contentState.copy(
+                selectedGroup = group,
+                selectedGroupState = SelectedGroupState.SELECTED,
+                scheduleStateList = createInitialScheduleStates()
+            )
+            loadSchedule(contentState.selectedScheduleIndex)
+        }
+    }
+
+    fun cancelGroupSelecting() {
+        updateSelectedGroupState(SelectedGroupState.SELECTED)
+    }
+
+    fun startGroupSelecting() {
+        updateSelectedGroupState(SelectedGroupState.SELECTING)
+    }
+
+    private fun updateSelectedGroupState(newState: SelectedGroupState) {
+        val contentState = _state.value as? State.Content ?: return
+        _state.value = contentState.copy(selectedGroupState = newState)
+    }
+
+    private fun createInitialScheduleStates(): List<ScheduleState> {
+        return getDatesAroundTodayUseCase(500, 500)
+            .map(ScheduleState::ReadyToLoad)
     }
 
     private fun loadSchedule(index: Int) {
@@ -65,14 +99,16 @@ class ScheduleViewModel(
         )
 
         viewModelScope.launch {
-            val schedule = getScheduleByDateUseCase(currentState.group.id, scheduleState.date)
+            val schedule = getScheduleByDateUseCase(
+                currentState.selectedGroup.id,
+                scheduleState.date,
+            )
             (_state.value as? State.Content)?.let {
                 _state.value = it.updateScheduleState(
                     index = index,
                     scheduleState = ScheduleState.Loaded(scheduleState.date, schedule.lessons)
                 )
             }
-
         }
     }
 

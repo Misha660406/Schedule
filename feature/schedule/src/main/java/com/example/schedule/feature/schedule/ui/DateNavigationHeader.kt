@@ -1,5 +1,6 @@
 package com.example.schedule.feature.schedule.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,7 +16,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun Header(date: LocalDate, groupName: String) {
+fun Header(date: LocalDate, groupName: String, onGroupSelectionClick: () -> Unit) {
     val dateOfWeekFormatter = remember {
         DateTimeFormatter.ofPattern("EEEE")
     }
@@ -45,7 +46,9 @@ fun Header(date: LocalDate, groupName: String) {
         Text(
             text = groupName,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = 8.dp)
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .clickable { onGroupSelectionClick() }
         )
     }
 }
