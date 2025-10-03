@@ -11,7 +11,9 @@ sealed interface State {
     data object Loading : State
 
     data class Content(
-        val group: Group,
+        val selectedGroup: Group,
+        val selectedGroupList: List<Group>,
+        val selectedGroupState: SelectedGroupState,
         val scheduleStateList: List<ScheduleState>,
         val selectedScheduleIndex: Int,
     ) : State
@@ -26,4 +28,10 @@ sealed interface ScheduleState {
     data class Loading(override val date: LocalDate) : ScheduleState
 
     data class Loaded(override val date: LocalDate, val lessons: List<Lesson>) : ScheduleState
+}
+
+enum class SelectedGroupState {
+
+    SELECTING,
+    SELECTED
 }
