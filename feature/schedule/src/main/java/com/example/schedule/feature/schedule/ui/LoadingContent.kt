@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.schedule.feature.schedule.R
+import com.example.schedule.shared.ui.ui.theme.ScheduleTheme
 
 @Composable
 fun LoadingContent() {
@@ -23,7 +24,8 @@ fun LoadingContent() {
         CircularProgressIndicator()
         Text(
             modifier = Modifier.padding(top = 8.dp),
-            text = stringResource(R.string.feature_schedule_loading)
+            text = stringResource(R.string.feature_schedule_loading),
+            color = ScheduleTheme.colors.textPrimary,
         )
     }
 }
