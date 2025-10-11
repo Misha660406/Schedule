@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import com.example.schedule.di.GlobalBackstackNavigatorQualifier
 import com.example.schedule.feature.schedule.ui.ScheduleScreen
 import com.example.schedule.libs.navigation.BackstackNavigator
-import com.example.schedule.ui.theme.ScheduleTheme
+import com.example.schedule.shared.ui.ui.theme.ScheduleTheme
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +35,10 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             ScheduleTheme(darkTheme = isSystemInDarkTheme()) {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = ScheduleTheme.colors.background
+                ) {
                     val currentScreen by navigator.currentScreen.collectAsState()
                     currentScreen.Render()
                 }

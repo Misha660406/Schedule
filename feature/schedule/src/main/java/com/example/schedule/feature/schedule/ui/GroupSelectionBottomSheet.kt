@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +17,7 @@ import com.example.schedule.feature.schedule.R
 import com.example.schedule.feature.schedule.presentation.SelectedGroupState
 import com.example.schedule.feature.schedule.presentation.State
 import com.example.schedule.shared.group.domain.entity.Group
+import com.example.schedule.shared.ui.ui.theme.ScheduleTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,6 +28,7 @@ fun GroupSelectorBottomSheet(
 ) {
     if (state.selectedGroupState == SelectedGroupState.SELECTING) {
         ModalBottomSheet(
+            containerColor = ScheduleTheme.colors.background,
             onDismissRequest = { onCloseGroupSelector() },
         ) {
             GroupSelectionBottomSheetContent(
@@ -46,14 +47,16 @@ private fun GroupSelectionBottomSheetContent(
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
         Text(
             text = stringResource(R.string.feature_schedule_select_group),
-            style = MaterialTheme.typography.headlineSmall,
+            style = ScheduleTheme.typography.h2,
+            color = ScheduleTheme.colors.textPrimary,
             modifier = Modifier.padding(bottom = 16.dp, start = 16.dp, end = 16.dp)
         )
         LazyColumn {
             items(groups) { group ->
                 Text(
                     text = group.name,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = ScheduleTheme.typography.bodyMain,
+                    color = ScheduleTheme.colors.textPrimary,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { onGroupSelected(group) }
