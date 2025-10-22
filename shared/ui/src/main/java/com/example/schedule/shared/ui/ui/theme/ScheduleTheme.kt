@@ -26,6 +26,15 @@ data class ColorScheme(
     val divider: Color,
     val pressedButton: Color,
     val chipsSelect: Color,
+    val imageNoSchedule: Int,
+    val imageNoGroup: Int,
+    val imageWeekend: Int,
+    val imageCalendar: Int,
+    val imageCalendarClicked: Int,
+    val imageHome: Int,
+    val imageHomeClicked: Int,
+    val imageSettings: Int,
+    val imageSettingsClicked: Int,
 )
 
 internal val LocalColors = staticCompositionLocalOf<ColorScheme> {
