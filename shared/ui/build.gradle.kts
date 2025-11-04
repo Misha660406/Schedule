@@ -1,18 +1,11 @@
 plugins {
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
 }
 
 dependencies {
-    implementation(libs.koin.android)
     implementation(libs.material3)
-
-    implementation(project(":shared-date"))
-    implementation(project(":shared-group"))
-    implementation(project(":shared-schedule"))
-    implementation(project(":shared-ui"))
-    implementation(project(":libs-navigation"))
 }
 
 android {

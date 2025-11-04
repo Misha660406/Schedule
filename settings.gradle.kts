@@ -31,6 +31,9 @@ project(":shared-group").projectDir = file("shared/group")
 include(":shared-schedule")
 project(":shared-schedule").projectDir = file("shared/schedule")
 
+include(":shared-ui")
+project(":shared-ui").projectDir = file("shared/ui")
+
 include(":libs-navigation")
 project(":libs-navigation").projectDir = file("libs/navigation")
 

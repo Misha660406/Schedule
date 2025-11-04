@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,10 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.schedule.feature.schedule.R
 import com.example.schedule.feature.schedule.presentation.ScheduleState
 import com.example.schedule.shared.schedule.domain.entity.Lesson
+import com.example.schedule.shared.ui.ui.theme.ScheduleTheme
 
 @Composable
 fun ScheduleDay(scheduleState: ScheduleState) {
@@ -38,7 +38,8 @@ private fun LoadedContent(scheduleState: ScheduleState.Loaded) {
     if (scheduleState.lessons.isEmpty()) {
         Text(
             text = stringResource(R.string.feature_schedule_no_lessons),
-            style = MaterialTheme.typography.bodyLarge,
+            style = ScheduleTheme.typography.h3,
+            color = ScheduleTheme.colors.textPrimary,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -56,6 +57,10 @@ private fun LoadedContent(scheduleState: ScheduleState.Loaded) {
 @Composable
 private fun LessonItem(lesson: Lesson) {
     OutlinedCard(
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = ScheduleTheme.colors.surface,
+            contentColor = ScheduleTheme.colors.textPrimary,
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
@@ -63,20 +68,17 @@ private fun LessonItem(lesson: Lesson) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = "${lesson.position}. ${lesson.name}",
-                style = MaterialTheme.typography.titleMedium,
-                fontSize = 16.sp
+                style = ScheduleTheme.typography.bodyMain,
             )
             Text(
                 text = stringResource(R.string.feature_schedule_room, lesson.room),
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 14.sp
+                style = ScheduleTheme.typography.bodyMain,
             )
             Text(
                 text = remember(lesson.position) {
                     getLessonTime(lesson.position)
                 },
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = 14.sp
+                style = ScheduleTheme.typography.bodyMain,
             )
         }
     }
