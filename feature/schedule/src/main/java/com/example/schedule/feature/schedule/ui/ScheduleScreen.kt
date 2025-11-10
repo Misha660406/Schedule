@@ -22,6 +22,8 @@ class ScheduleScreen : Screen {
             onOpenGroupSelectorListener = viewModel::startGroupSelecting,
             onCloseGroupSelectorListener = viewModel::cancelGroupSelecting,
             onGroupSelectedListener = viewModel::selectNewGroup,
+            onPreviousDayListener = viewModel::getPreviousDay,
+            onNextDayListener = viewModel::getNextDay,
         )
 
         LaunchedEffect(Unit) {

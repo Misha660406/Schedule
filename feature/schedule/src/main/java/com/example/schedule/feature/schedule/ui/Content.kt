@@ -24,6 +24,8 @@ fun Render(
     onOpenGroupSelectorListener: () -> Unit,
     onGroupSelectedListener: (Group) -> Unit,
     onCloseGroupSelectorListener: () -> Unit,
+    onPreviousDayListener: () -> Unit,
+    onNextDayListener: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -42,6 +44,8 @@ fun Render(
                     onOpenGroupSelectorListener = onOpenGroupSelectorListener,
                     onGroupSelectedListener = onGroupSelectedListener,
                     onCloseGroupSelectorListener = onCloseGroupSelectorListener,
+                    onPreviousDayListener = onPreviousDayListener,
+                    onNextDayListener = onNextDayListener,
                 )
             }
         }
@@ -55,6 +59,8 @@ private fun Content(
     onOpenGroupSelectorListener: () -> Unit,
     onGroupSelectedListener: (Group) -> Unit,
     onCloseGroupSelectorListener: () -> Unit,
+    onPreviousDayListener: () -> Unit,
+    onNextDayListener: () -> Unit,
 ) {
     GroupSelectorBottomSheet(
         state = state,
@@ -68,15 +74,16 @@ private fun Content(
     )
 
     Column(Modifier.fillMaxSize()) {
+        Header(
+            date = state.scheduleStateList[pagerState.currentPage].date,
+            groupName = state.selectedGroup.name,
+            selectedGroupState = state.selectedGroupState,
+            onGroupSelectionClick = onOpenGroupSelectorListener,
+            onPreviousDayClick = onPreviousDayListener,
+            onNextDayClick = onNextDayListener
+        )
         HorizontalPager(state = pagerState) { page ->
-            Column(Modifier.fillMaxSize()) {
-                Header(
-                    date = state.scheduleStateList[page].date,
-                    groupName = state.selectedGroup.name,
-                    onGroupSelectionClick = onOpenGroupSelectorListener
-                )
-                ScheduleDay(scheduleState = state.scheduleStateList[page])
-            }
+            ScheduleDay(scheduleState = state.scheduleStateList[page])
         }
     }
 }

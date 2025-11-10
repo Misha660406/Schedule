@@ -49,6 +49,16 @@ class ScheduleViewModel(
         loadSchedule(newIndex)
     }
 
+    fun getPreviousDay() {
+        val contentState = _state.value as? State.Content ?: return
+        updateSelectedScheduleIndex(contentState.selectedScheduleIndex - 1)
+    }
+
+    fun getNextDay() {
+        val contentState = _state.value as? State.Content ?: return
+        updateSelectedScheduleIndex(contentState.selectedScheduleIndex + 1)
+    }
+
     fun selectNewGroup(group: Group) {
         val contentState = _state.value as? State.Content ?: return
 
