@@ -29,6 +29,10 @@ private val LightColorScheme = ColorScheme(
     imageHomeClicked = R.drawable.home_light,
     imageSettings = R.drawable.settings_dark,
     imageSettingsClicked = R.drawable.settings_light,
+    imageArrowRight = R.drawable.arrow_right_dark,
+    imageArrowLeft = R.drawable.arrow_left_dark,
+    imageArrowDown = R.drawable.arrow_down_dark,
+    imageArrowUp = R.drawable.arrow_up_dark,
 )
 
 private val DarkColorScheme = ColorScheme(
@@ -51,6 +55,10 @@ private val DarkColorScheme = ColorScheme(
     imageHomeClicked = R.drawable.home_light,
     imageSettings = R.drawable.settings_light,
     imageSettingsClicked = R.drawable.settings_light,
+    imageArrowRight = R.drawable.arrow_right_lite,
+    imageArrowLeft = R.drawable.arrow_left_lite,
+    imageArrowDown = R.drawable.arrow_down_lite,
+    imageArrowUp = R.drawable.arrow_up_lite,
 )
 
 val typography = Typography(

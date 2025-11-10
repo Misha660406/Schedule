@@ -35,6 +35,10 @@ data class ColorScheme(
     val imageHomeClicked: Int,
     val imageSettings: Int,
     val imageSettingsClicked: Int,
+    val imageArrowRight: Int,
+    val imageArrowLeft: Int,
+    val imageArrowDown: Int,
+    val imageArrowUp: Int,
 )
 
 internal val LocalColors = staticCompositionLocalOf<ColorScheme> {
