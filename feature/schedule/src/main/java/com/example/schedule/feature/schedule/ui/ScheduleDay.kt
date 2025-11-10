@@ -31,6 +31,7 @@ fun ScheduleDay(scheduleState: ScheduleState) {
     AnimatedContent(
         targetState = scheduleState,
         contentKey = { it::class.java },
+        modifier = Modifier.fillMaxSize()
     ) { currentState ->
         when (currentState) {
             is ScheduleState.ReadyToLoad, is ScheduleState.Loading -> LoadingContent()
