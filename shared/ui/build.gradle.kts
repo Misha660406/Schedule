@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
     implementation(libs.material3)
+    implementation(project(":shared-group"))
 }
 
 android {
