@@ -16,7 +16,7 @@ class ScheduleScreen : Screen {
     override fun Render() {
         val state by viewModel.state.collectAsState()
 
-        Render(
+        ScheduleContent(
             state = state,
             onSelectedScheduleIndexChangedListener = viewModel::updateSelectedScheduleIndex,
             onOpenGroupSelectorListener = viewModel::startGroupSelecting,
@@ -24,6 +24,7 @@ class ScheduleScreen : Screen {
             onGroupSelectedListener = viewModel::selectNewGroup,
             onPreviousDayListener = viewModel::getPreviousDay,
             onNextDayListener = viewModel::getNextDay,
+            onDateSelectedListener = viewModel::selectDate,
         )
 
         LaunchedEffect(Unit) {

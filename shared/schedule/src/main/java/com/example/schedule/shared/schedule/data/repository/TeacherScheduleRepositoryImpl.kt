@@ -2,43 +2,110 @@ package com.example.schedule.shared.schedule.data.repository
 
 import com.example.schedule.shared.schedule.domain.entity.Lesson
 import com.example.schedule.shared.schedule.domain.entity.Schedule
+import com.example.schedule.shared.schedule.domain.entity.Subgroup
 import com.example.schedule.shared.schedule.domain.repository.ScheduleRepository
+import com.example.schedule.shared.schedule.domain.repository.TeacherPreferencesRepository
 import com.example.schedule.shared.schedule.domain.repository.TeacherScheduleRepository
 import java.time.LocalDate
 
 class TeacherScheduleRepositoryImpl(
-    private val scheduleRepository: ScheduleRepository
+    private val scheduleRepository: ScheduleRepository,
+    private val preferencesRepository: TeacherPreferencesRepository,
 ) : TeacherScheduleRepository {
 
-    private data class Subscription(val groupId: Long, val subjectName: String)
-
-    private val teacherSubscriptions = listOf(
-        Subscription(groupId = 100L, subjectName = "Математика"),
-        Subscription(groupId = 100L, subjectName = "Химия"),
-        Subscription(groupId = 200L, subjectName = "Геодезия"),
-        Subscription(groupId = 300L, subjectName = "Ин.Язык")
+    // Временный класс для хранения найденных совпадений перед группировкой
+    private data class Match(
+        val position: Int,
+        val originalName: String,
+        val room: String,
+        val groupName: String,
+        val baseSubject: String,
     )
 
-    private val allGroupIds = listOf(100L, 200L, 300L)
-
     override suspend fun getTeacherSchedule(date: LocalDate): Schedule {
-        val teacherLessons = mutableListOf<Lesson>()
+        // 1. Читаем JSON с настройками преподавателя (из памяти телефона)
+        val subscriptions = preferencesRepository.getSubscriptions()
+        val activeGroups = subscriptions.map { it.groupName }.distinct()
 
-        for (groupId in allGroupIds) {
-            val schedule = scheduleRepository.getByDate(groupId, date)
-            val groupLessons = schedule.lessons
-            val subscriptionsForGroup = teacherSubscriptions.filter { it.groupId == groupId }
+        val allMatches = mutableListOf<Match>()
 
-            for (lesson in groupLessons) {
-                val isSubjectRelevant =
-                    subscriptionsForGroup.any { sub -> sub.subjectName == lesson.name }
+        // 2. Ищем все пары преподавателя по группам
+        for (groupName in activeGroups) {
+            val schedule = scheduleRepository.getByDate(groupName, date)
+            val subsForGroup = subscriptions.filter { it.groupName == groupName }
 
-                if (isSubjectRelevant) {
-                    teacherLessons.add(lesson.copy(name = "${lesson.name} (Гр. $groupId)"))
+            for (lesson in schedule.lessons) {
+                val cleanDailyName = getCleanSubjectName(lesson.name)
+                val dailySubgroup = extractSubgroup(lesson.name)
+
+                // Проверяем, ведет ли препод эту пару у этой подгруппы
+                val matchedSub = subsForGroup.find { sub ->
+                    val nameMatches = sub.subjectName.equals(cleanDailyName, ignoreCase = true)
+                    val subgroupMatches = (dailySubgroup == Subgroup.ALL) ||
+                            (sub.subgroup == Subgroup.ALL) ||
+                            (sub.subgroup == dailySubgroup)
+                    nameMatches && subgroupMatches
+                }
+
+                if (matchedSub != null) {
+                    allMatches.add(
+                        Match(
+                            position = lesson.position,
+                            originalName = lesson.name,
+                            room = lesson.room,
+                            groupName = groupName,
+                            baseSubject = matchedSub.subjectName // То, что препод отметил галочкой
+                        )
+                    )
                 }
             }
         }
 
-        return Schedule(date = date, lessons = teacherLessons.sortedBy { it.position })
+        // 3. МАГИЯ СОВМЕЩЕНКИ (Группируем по позиции и базовому предмету)
+        val teacherLessons = allMatches
+            .groupBy { it.position to it.baseSubject }
+            .map { (key, matchesList) ->
+                val position = key.first
+
+                // Берем оригинальное имя из первой пары (чтобы сохранить приписки вроде "УМ", если они есть),
+                // но удаляем маркеры подгрупп (1) или (2)
+                val displaySubject = matchesList.first().originalName
+                    .replace(Regex("\\s*\\([12анАН]\\)"), "")
+                    .trim()
+
+                // Кабинет берем из первой пары (обычно при совмещенке кабинет один на всех)
+                val room = matchesList.first().room
+
+                // Собираем группы через запятую и сортируем по алфавиту/цифрам
+                val groupsString = matchesList.map { it.groupName }
+                    .distinct()
+                    .sorted()
+                    .joinToString(", ")
+
+                Lesson(
+                    position = position,
+                    name = "$displaySubject (Гр. $groupsString)",
+                    room = room,
+                    teacher = ""
+                )
+            }
+            .sortedBy { it.position } // Сортируем пары по времени (1, 2, 3...)
+
+        return Schedule(date = date, lessons = teacherLessons)
+    }
+
+    private fun extractSubgroup(lessonName: String): Subgroup {
+        val nameLower = lessonName.lowercase()
+        return when {
+            nameLower.contains("(1)") || nameLower.contains("(а)") -> Subgroup.FIRST
+            nameLower.contains("(2)") || nameLower.contains("(н)") -> Subgroup.SECOND
+            else -> Subgroup.ALL
+        }
+    }
+
+    private fun getCleanSubjectName(lessonName: String): String {
+        return lessonName
+            .replace(Regex("\\s*\\([12анАН]\\)"), "")
+            .trim()
     }
 }

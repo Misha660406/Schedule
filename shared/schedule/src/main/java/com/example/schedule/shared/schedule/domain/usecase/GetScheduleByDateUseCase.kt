@@ -6,6 +6,6 @@ import java.time.LocalDate
 
 class GetScheduleByDateUseCase(private val repository: ScheduleRepository) {
 
-    suspend operator fun invoke(groupId: Long, date: LocalDate): Schedule =
+    suspend operator fun invoke(groupId: String, date: LocalDate): Schedule =
         repository.getByDate(groupId, date)
 }

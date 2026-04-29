@@ -47,7 +47,7 @@ private fun LoadedContent(scheduleState: ScheduleState.Loaded) {
     } else {
         LazyColumn {
             items(scheduleState.lessons) { lesson ->
-                LessonItem(lesson)
+                LessonItem(lesson = lesson, date = scheduleState.date)
             }
         }
     }
@@ -78,10 +78,16 @@ private fun NoLesson() {
 }
 
 @Composable
-private fun LessonItem(lesson: Lesson) {
-    val (startTime, endTime) = remember(lesson.position) { getLessonTime(lesson.position) }
+private fun LessonItem(lesson: Lesson, date: java.time.LocalDate) { // Добавили date
+    val (startTime, endTime) = remember(lesson.position, date) {
+        getLessonTime(
+            date,
+            lesson.position
+        )
+    }
+
     LessonCard(
-        lessonPosition = lesson.position.toString(),
+        lessonPosition = if (lesson.position == 0) "0" else lesson.position.toString(),
         lessonName = lesson.name,
         lessonRoom = stringResource(R.string.feature_schedule_room, lesson.room),
         startTimeLesson = startTime,
@@ -92,11 +98,43 @@ private fun LessonItem(lesson: Lesson) {
     )
 }
 
-private fun getLessonTime(position: Int): Pair<String, String> = listOf(
-    "08:30" to "10:00",
-    "10:15" to "11:45",
-    "12:15" to "13:45",
-    "14:05" to "15:35",
-    "15:45" to "17:15",
-    "17:25" to "18:55"
-).getOrElse(position - 1) { "Нет времени" to "Нет времени" }
+private fun getLessonTime(date: java.time.LocalDate, position: Int): Pair<String, String> {
+    return when (date.dayOfWeek) {
+        java.time.DayOfWeek.MONDAY -> {
+            when (position) {
+                0 -> "08:30" to "09:15"
+                1 -> "09:25" to "10:55"
+                2 -> "11:05" to "12:35"
+                3 -> "13:00" to "14:30"
+                4 -> "14:40" to "16:10"
+                5 -> "16:20" to "17:50"
+                6 -> "18:00" to "19:30"
+                else -> "—" to "—"
+            }
+        }
+
+        java.time.DayOfWeek.THURSDAY -> {
+            when (position) {
+                0 -> "08:30" to "10:00"
+                1 -> "10:15" to "11:45"
+                2 -> "12:15" to "13:45"
+                3 -> "14:05" to "15:35"
+                4 -> "15:45" to "17:15"
+                5 -> "17:25" to "18:55"
+                else -> "—" to "—"
+            }
+        }
+
+        else -> {
+            when (position) {
+                1 -> "08:30" to "10:00"
+                2 -> "10:15" to "11:45"
+                3 -> "12:15" to "13:45"
+                4 -> "14:05" to "15:35"
+                5 -> "15:45" to "17:15"
+                6 -> "17:25" to "18:55"
+                else -> "—" to "—"
+            }
+        }
+    }
+}

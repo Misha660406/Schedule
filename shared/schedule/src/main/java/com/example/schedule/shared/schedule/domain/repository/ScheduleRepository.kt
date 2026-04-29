@@ -5,5 +5,5 @@ import java.time.LocalDate
 
 interface ScheduleRepository {
 
-    suspend fun getByDate(groupId: Long, date: LocalDate): Schedule
+    suspend fun getByDate(groupId: String, date: LocalDate): Schedule
 }

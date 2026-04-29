@@ -1,5 +1,6 @@
 package com.example.schedule
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -12,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.schedule.di.GlobalBackstackNavigatorQualifier
+import com.example.schedule.feature.schedule.ui.DeepLinkHandler
 import com.example.schedule.feature.schedule.ui.MainTestScreen
 import com.example.schedule.libs.navigation.BackstackNavigator
 import com.example.schedule.shared.ui.ui.theme.ScheduleTheme
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        DeepLinkHandler.handleIntent(intent)
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
                 android.graphics.Color.TRANSPARENT,
@@ -44,5 +47,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        DeepLinkHandler.handleIntent(intent)
     }
 }

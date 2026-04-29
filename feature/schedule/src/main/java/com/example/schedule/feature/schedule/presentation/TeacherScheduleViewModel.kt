@@ -9,6 +9,7 @@ import com.example.schedule.shared.schedule.domain.usecase.GetTeacherScheduleUse
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class TeacherScheduleViewModel(
     private val getTodayUseCase: GetTodayUseCase,
@@ -97,5 +98,25 @@ class TeacherScheduleViewModel(
         val newList = scheduleStateList.toMutableList()
         newList[index] = newState
         return copy(scheduleStateList = newList)
+    }
+
+    fun selectDate(date: LocalDate) {
+        val content = _state.value as? State.Content ?: return
+        val index = content.scheduleStateList.indexOfFirst { it.date == date }
+        if (index != -1) {
+            updateSelectedScheduleIndex(index)
+        }
+    }
+
+    fun reloadCurrentSchedule() {
+        val content = _state.value as? State.Content ?: return
+
+        // ПОЛНОСТЬЮ сбрасываем кэш всех дней, чтобы при свайпе загружались новые пары
+        val resetStates = getDatesAroundTodayUseCase(500, 500).map { ScheduleState.ReadyToLoad(it) }
+
+        _state.value = content.copy(scheduleStateList = resetStates)
+
+        // Запускаем загрузку для текущего дня
+        loadSchedule(content.selectedScheduleIndex)
     }
 }
